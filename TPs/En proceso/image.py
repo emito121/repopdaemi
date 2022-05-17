@@ -1,13 +1,11 @@
 import matplotlib.pyplot as plt
-from PIL import Image
-import numpy as np
 import cv2
 
 class Imagenes():
-    """Documentación de Image"""
+    """Crea instancias en las cuales almacena una imgen (array) y cuenta con métodos para interactuar con esta"""
 
     def __init__(self, image = None, filename:str = ""):
-        """Crea una matriz 2D a partir de image o de filename"""
+        """Almacena un array 2D o 3D o lo crea a partir de su directorio y nombre"""
 
         try:
             self.image = image
@@ -19,13 +17,22 @@ class Imagenes():
             self.fil = self.size()[0] #número de filas
             self.col = self.size()[1] #número de columnas
         
-        # else:
-        #     raise ValueError("No se ha dado una imágen ni un archivo")
+        else:
+            print("Se creó la imagen sin problemas")
 
     def loadImage(self, filename:str):
+        '''
+        Retorna un array correspondiente a una imagen.
+
+        Argumentos:
+            -filename (str): dirección correspondiente a una imagen en el almacenamiento
+        '''
         return cv2.imread(filename)
 
     def showImage(self):
+        '''
+        Muestra la imagen almacenada en la instancia de clase Imagenes.
+        '''
         dpi = 80
 
         height, width  = self.image.shape[:2]
@@ -42,14 +49,23 @@ class Imagenes():
         plt.show()
 
     def size(self):
+        '''
+        Retorna una tupla correspondiente a las dimensiones de la imagen de la forma (filas, columnas, capas)
+        '''
         return self.image.shape
 
-    def saveImage(self, nombre_archivo, filename:str):
-        imagen = self.loadImage(filename)
-        cv2.imwrite(nombre_archivo,imagen)
+    def saveImage(self, nombre_archivo:str = 'imagen_nueva.jpg'):
+        '''
+        Almacena la imagen del objeto actual, preferentemente es un .jpg
+
+        Argumentos:
+            -nombre_archivo (str): nombre de la imagen almacenada. Valor pre establecido 'imagen_nueva.jpg'
+        '''
+        cv2.imwrite(nombre_archivo,self.image)
 
 def main():
     nueva_imagen = Imagenes(filename = 'images/bote.jpg')
+    nueva_imagen.showImage()
     #print(type(nueva_imagen.image))
 
 #main()
