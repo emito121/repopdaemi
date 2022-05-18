@@ -14,8 +14,8 @@ def ajustarBrillo(imagen:'Imagenes', escalar:int = 2):
     '''
 
     if escalar <= 255 and escalar >= -255:
-
-        imagen_brillo = Imagenes(image = imagen.image*escalar) #numpy power
+        matriz = imagen.image
+        imagen_brillo = Imagenes(image = matriz*escalar) #numpy power
         return imagen_brillo
         
     #     matriz = imagen.image
@@ -52,23 +52,26 @@ def getHistograma(imagen:'Imagenes'):
 
     return histograma
 
-def plot_histograma(imagen:'Imagenes', rango:int = 256, canal:int = 1):
+def plot_histograma(imagen:'Imagenes', rango:int = 256):
     '''
     Grafica el histograma correspondiente a un canal de la instancia Imagenes actual
 
     Argumentos:
-        -imagen (Imagenes): instancia de la clase Imagenes a la que se desea graficar un histograma, debe ser RGB
+        -imagen (Imagenes): instancia de la clase Imagenes a la que se desea graficar su histograma, debe ser RGB
         -rango (int): cantidad de valores diferentes de píxeles en la matriz de imagen. Valor pre establecido 256.
-        -canal (int): canal del que se desea graficar su histograma. 0 para canal rojo, 1 para canal verde, 
-        2 para canal azul. Valor pre establecido 1.
     '''
 
-    histogram = getHistograma(imagen)[:,canal]
+    histogram = getHistograma(imagen)
 
-    plt.bar(x = list(range(rango)), height = histogram)
-    plt.title(f'Histograma del canal {canal}')
-    plt.xlabel('Píxel')
-    plt.ylabel('Cantidad')
+    fig, axs = plt.subplots(nrows=3, ncols=1, figsize = (10, 7), sharex = True)
+    fig.tight_layout()
+
+    for plot, canal, numero in zip(axs, ['red', 'green', 'blue'], [0,1,2]):
+        plot.bar(x = list(range(rango)), height = histogram[:,numero], color = canal)
+        plot.set_title(f'Histograma del canal {canal}')
+        plot.set_xlabel('Píxel')
+        plot.set_ylabel('Cantidad')
+
     plt.show()
 
 def getChannels(imagen:'Imagenes'):
@@ -170,9 +173,6 @@ def ajustarGamma(imagen:'Imagenes', gam:float = 1/4):
     else:
         raise ValueError('El gamma seleccionado debe ser mayor a 0!')
 
-def zero_padding(imagen, kernel_size):
-    pass
-    
 def aplicarKernel(imagen:'Imagenes', kernel:'numpy.ndarray'):
     '''
     Retorna un objeto de clase Imagenes con un filtrado a partir de la aplicacion de un kernel
@@ -190,14 +190,23 @@ def aplicarKernel(imagen:'Imagenes', kernel:'numpy.ndarray'):
     kcolumnas = kernel.shape[1]
 
     convolucion = np.zeros((filas, columnas, 3))
-    kernel = np.reshape(kernel, (9)) 
+    ksum = np.sum(kernel)
+    if ksum == 0:
+        ksum = 1
+    else:
+        ksum = ksum
 
     for canal in range(3):
         for fila in range(filas):
             for columna in range(columnas):
+
                 try:
-                    afiltrar = np.reshape(matriz[fila:fila+kfilas,columna:columna+kcolumnas,canal], (9))
-                    convolucion[fila][columna][canal] = np.dot(afiltrar, kernel)
+                    afiltrar = matriz[fila:fila+kfilas,
+                    columna:columna+kcolumnas,
+                    canal]
+                    
+                    convolucion[fila+1][columna+1][canal] = np.sum(afiltrar*kernel)/ksum
+
                 except:
                     pass
     
@@ -205,34 +214,71 @@ def aplicarKernel(imagen:'Imagenes', kernel:'numpy.ndarray'):
 
     return im_convolucion
 
+def aplicar_umbral(imagen:'Imagenes', umbral:'int' = 60):
+    '''
+    Hace que los píxeles en la imagen tomen valor 0 o 255 dependiendo si están por debajo o encima de un umbral.
+
+    Argumentos:
+        -imagen (Imagenes): Instancia de la clase imagen a la que se le desea aplicar un umbral
+        -umbral (int): numero entero que funcionará como umbral de píxeles
+    '''
+
+    if 255 >= umbral >= 0:
+        matriz = imagen.image
+        filas = imagen.fil
+        columnas = imagen.col
+
+        for canal in range(3):
+            for fila in range(filas):
+                for columna in range(columnas):
+                    pixel_actual = matriz[fila][columna][canal]
+                    if pixel_actual > umbral:
+                        matriz[fila][columna][canal] = 255
+                    else:
+                        matriz[fila][columna][canal] = 0
+        
+        imagen_cbin = Imagenes(image = matriz)
+
+        return imagen_cbin
+
+    else:
+        raise ValueError('El umbral se escapa del rango entre 0 y 255')
+
 def main():
-    nueva_imagen = Imagenes(filename = 'images/cerebral-angiography_thumb.jpg')
-    nueva_imagen.showImage()
+    nueva_imagen = Imagenes(filename = 'images/coronary4.jpg')
+    #nueva_imagen.showImage()
 
-    imagen_brillo = ajustarBrillo(nueva_imagen)
-    imagen_brillo.showImage()
+    #PROBAR IMPLEMENTACIONES UNA A UNA, COMENTAR LAS OTRAS
 
-    hist = getHistograma(nueva_imagen)
+    # imagen_brillo = ajustarBrillo(nueva_imagen)
+    # imagen_brillo.showImage()
 
-    plot_histograma(nueva_imagen, 256, 1)
+    # hist = getHistograma(nueva_imagen)
+
+    # plot_histograma(nueva_imagen, 256)
     
-    r, g, b = getChannels(nueva_imagen)
-    print(type(r))
+    # r, g, b = getChannels(nueva_imagen)
+    # print(type(r))
 
-    contraste_ajustado = ajustarContraste(nueva_imagen, 3)
-    contraste_ajustado.showImage()
+    # contraste_ajustado = ajustarContraste(nueva_imagen, 3)
+    # contraste_ajustado.showImage()
 
-    image_clog = aplicarLog(nueva_imagen)
-    image_clog.showImage()
+    # image_clog = aplicarLog(nueva_imagen)
+    # image_clog.showImage()
 
-    image_gamma = ajustarGamma(nueva_imagen, 2)
-    image_gamma.showImage()
+    # image_gamma = ajustarGamma(nueva_imagen, 2)
+    # image_gamma.showImage()
 
     kernel = np.array([(1, 2, 1),
                        (0, 0, 0),
-                       (-1, -2, -1)], dtype = 'int8')# kernel top sobel
-
+                       (-1, -2, -1)])# kernel top sobel
+    # kernel = np.array([(-2, -1, 0),
+    #                    (-1, 1, 1),
+    #                    (0, 1, 2)])# kernel emboss
     image_filtrada = aplicarKernel(nueva_imagen, kernel)
     image_filtrada.showImage()
+
+    im_bin = aplicar_umbral(nueva_imagen, 57)
+    im_bin.showImage()
 
 main()

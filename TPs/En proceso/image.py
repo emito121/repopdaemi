@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import cv2
+import numpy as np
 
 class Imagenes():
     """Crea instancias en las cuales almacena una imgen (array) y cuenta con métodos para interactuar con esta"""
@@ -8,12 +9,12 @@ class Imagenes():
         """Almacena un array 2D o 3D o lo crea a partir de su directorio y nombre"""
 
         try:
-            self.image = image
+            self.image = np.clip(image,0,255).astype('int16')
             self.fil = self.size()[0] #número de filas
             self.col = self.size()[1] #número de columnas
         
         except:
-            self.image = self.loadImage(filename)
+            self.image = np.clip(self.loadImage(filename),0,255).astype('int16')
             self.fil = self.size()[0] #número de filas
             self.col = self.size()[1] #número de columnas
         
@@ -64,8 +65,8 @@ class Imagenes():
         cv2.imwrite(nombre_archivo,self.image)
 
 def main():
-    nueva_imagen = Imagenes(filename = 'images/bote.jpg')
+    nueva_imagen = Imagenes(filename = 'images/brainvessels2.jpg')
     nueva_imagen.showImage()
-    #print(type(nueva_imagen.image))
+    #print(nueva_imagen.image)
 
 #main()
