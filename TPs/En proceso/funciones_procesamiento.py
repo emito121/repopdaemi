@@ -205,7 +205,7 @@ def aplicarKernel(imagen:'Imagenes', kernel:'numpy.ndarray'):
                     columna:columna+kcolumnas,
                     canal]
                     
-                    convolucion[fila+1][columna+1][canal] = np.sum(afiltrar*kernel)/ksum
+                    convolucion[fila+(kfilas//2)][columna+(kfilas//2)][canal] = np.sum(afiltrar*kernel)/ksum
 
                 except:
                     pass
@@ -245,8 +245,8 @@ def aplicar_umbral(imagen:'Imagenes', umbral:'int' = 60):
         raise ValueError('El umbral se escapa del rango entre 0 y 255')
 
 def main():
-    nueva_imagen = Imagenes(filename = 'images/coronary4.jpg')
-    #nueva_imagen.showImage()
+    nueva_imagen = Imagenes(filename = 'images/lobito2.jpg')
+    nueva_imagen.showImage()
 
     #PROBAR IMPLEMENTACIONES UNA A UNA, COMENTAR LAS OTRAS
 
@@ -255,30 +255,30 @@ def main():
 
     # hist = getHistograma(nueva_imagen)
 
-    # plot_histograma(nueva_imagen, 256)
+    #plot_histograma(nueva_imagen, 256)
     
     # r, g, b = getChannels(nueva_imagen)
-    # print(type(r))
+    # r.showImage()
 
     # contraste_ajustado = ajustarContraste(nueva_imagen, 3)
     # contraste_ajustado.showImage()
 
-    # image_clog = aplicarLog(nueva_imagen)
-    # image_clog.showImage()
+    image_clog = aplicarLog(nueva_imagen)
+    image_clog.showImage()
 
     # image_gamma = ajustarGamma(nueva_imagen, 2)
     # image_gamma.showImage()
 
-    kernel = np.array([(1, 2, 1),
-                       (0, 0, 0),
-                       (-1, -2, -1)])# kernel top sobel
+    # kernel = np.array([(1, 2, 1),
+    #                    (0, 0, 0),
+    # #                    (-1, -2, -1)])# kernel top sobel
     # kernel = np.array([(-2, -1, 0),
     #                    (-1, 1, 1),
     #                    (0, 1, 2)])# kernel emboss
-    image_filtrada = aplicarKernel(nueva_imagen, kernel)
-    image_filtrada.showImage()
+    # image_filtrada = aplicarKernel(nueva_imagen, kernel)
+    # image_filtrada.showImage()
 
-    im_bin = aplicar_umbral(nueva_imagen, 57)
-    im_bin.showImage()
+    # im_bin = aplicar_umbral(nueva_imagen, 57)
+    # im_bin.showImage()
 
 main()

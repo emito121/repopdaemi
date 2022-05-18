@@ -28,7 +28,10 @@ class Imagenes():
         Argumentos:
             -filename (str): dirección correspondiente a una imagen en el almacenamiento
         '''
-        return cv2.imread(filename)
+        im_cv = cv2.imread(filename)
+        im_rgb = cv2.cvtColor(im_cv, cv2.COLOR_BGR2RGB)
+
+        return im_rgb
 
     def showImage(self):
         '''
