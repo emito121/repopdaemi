@@ -263,22 +263,22 @@ def main():
     # contraste_ajustado = ajustarContraste(nueva_imagen, 3)
     # contraste_ajustado.showImage()
 
-    image_clog = aplicarLog(nueva_imagen)
-    image_clog.showImage()
+    # image_clog = aplicarLog(nueva_imagen)
+    # image_clog.showImage()
 
     # image_gamma = ajustarGamma(nueva_imagen, 2)
     # image_gamma.showImage()
 
-    # kernel = np.array([(1, 2, 1),
-    #                    (0, 0, 0),
-    # #                    (-1, -2, -1)])# kernel top sobel
+    kernel = np.array([(1, 2, 1),
+                       (0, 0, 0),
+                       (-1, -2, -1)])# kernel top sobel
     # kernel = np.array([(-2, -1, 0),
     #                    (-1, 1, 1),
     #                    (0, 1, 2)])# kernel emboss
-    # image_filtrada = aplicarKernel(nueva_imagen, kernel)
-    # image_filtrada.showImage()
+    image_filtrada = aplicarKernel(nueva_imagen, kernel)
+    image_filtrada.showImage()
 
-    # im_bin = aplicar_umbral(nueva_imagen, 57)
-    # im_bin.showImage()
+    im_bin = aplicar_umbral(nueva_imagen, 57)
+    im_bin.showImage()
 
 main()
